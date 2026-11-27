@@ -2,10 +2,10 @@ import Foundation
 import Speech
 import AVFoundation
 
-/// Captura de microfone + transcrição PT-BR 100% on-device via Speech.framework.
+/// Captura de microfone + transcrição 100% on-device via Speech.framework.
 /// Substitui faster-whisper + sounddevice + pynput por frameworks nativos da Apple.
 final class SpeechTranscriber: NSObject {
-    private let recognizer = SFSpeechRecognizer(locale: Locale(identifier: "pt-BR"))
+    private let recognizer = SFSpeechRecognizer(locale: Locale(identifier: AppLanguage.localeID))
     private let engine = AVAudioEngine()
     private var request: SFSpeechAudioBufferRecognitionRequest?
     private var task: SFSpeechRecognitionTask?
@@ -30,7 +30,7 @@ final class SpeechTranscriber: NSObject {
         guard !isRecording else { return }
 
         guard let recognizer, recognizer.isAvailable else {
-            onError(VozError.speech("reconhecedor PT-BR indisponível"))
+            onError(VozError.speech("speech recognizer unavailable for \(AppLanguage.localeID)"))
             return
         }
 

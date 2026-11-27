@@ -9,27 +9,29 @@ struct Command: Decodable {
     var resposta: String?
 }
 
-/// Interpreta linguagem natural PT-BR via Ollama (local) e despacha para os apps.
+/// Interpreta natural language via Ollama (local) e despacha para os apps.
 final class Commander {
     let ollamaURL: URL
     let model: String
 
     private let systemPrompt = """
-    Você é o cérebro de um assistente de voz que controla apps no MacBook Pro.
-    Interprete o comando do usuário em português e retorne um JSON com a ação a executar.
+    You are the brain of a voice assistant that controls apps on a MacBook Pro.
+    Interpret the user's command (it may be in English or Portuguese) and return a JSON with the action to run.
+    The "resposta" sentence is spoken aloud: write it in the language of the user's command, defaulting to English.
 
-    Apps disponíveis: telegram, whatsapp, messages (iMessage)
+    Available apps: telegram, whatsapp, messages (iMessage)
 
-    Formato de resposta — APENAS JSON, sem texto extra, sem markdown:
-    {"acao":"<abrir|enviar_mensagem|nova_conversa|resposta_verbal>","app":"<telegram|whatsapp|messages|null>","contato":"<nome ou null>","mensagem":"<texto ou null>","resposta":"<frase curta em PT-BR para falar em voz alta>"}
+    Response format — JSON ONLY, no extra text, no markdown (keys and "acao" values stay exactly as shown):
+    {"acao":"<abrir|enviar_mensagem|nova_conversa|resposta_verbal>","app":"<telegram|whatsapp|messages|null>","contato":"<nome ou null>","mensagem":"<texto ou null>","resposta":"<short sentence to speak aloud>"}
 
-    Exemplos:
-    - "abre o telegram" → {"acao":"abrir","app":"telegram","contato":null,"mensagem":null,"resposta":"Abrindo o Telegram."}
+    Examples:
+    - "open telegram" → {"acao":"abrir","app":"telegram","contato":null,"mensagem":null,"resposta":"Opening Telegram."}
+    - "send hi to John on whatsapp" → {"acao":"enviar_mensagem","app":"whatsapp","contato":"John","mensagem":"Hi","resposta":"Message sent to John on WhatsApp."}
     - "manda oi pro João no zap" → {"acao":"enviar_mensagem","app":"whatsapp","contato":"João","mensagem":"Oi","resposta":"Mensagem enviada pro João no WhatsApp."}
-    - "nova conversa no telegram" → {"acao":"nova_conversa","app":"telegram","contato":null,"mensagem":null,"resposta":"Abrindo nova conversa no Telegram."}
-    - "que horas são" → {"acao":"resposta_verbal","app":null,"contato":null,"mensagem":null,"resposta":"Só consigo controlar seus apps de mensagem por enquanto."}
+    - "new chat on telegram" → {"acao":"nova_conversa","app":"telegram","contato":null,"mensagem":null,"resposta":"Opening a new chat on Telegram."}
+    - "what time is it" → {"acao":"resposta_verbal","app":null,"contato":null,"mensagem":null,"resposta":"For now I can only control your messaging apps."}
 
-    Responda APENAS com o JSON, sem nenhum texto adicional.
+    Reply with ONLY the JSON, no additional text.
     """
 
     init() {
@@ -93,7 +95,7 @@ final class Commander {
             guard let data,
                   let obj = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
                   let raw = obj["response"] as? String else {
-                return done(.failure(VozError.ollama("resposta inválida")))
+                return done(.failure(VozError.ollama("invalid response")))
             }
             do {
                 done(.success(try Self.parseCommand(raw)))
@@ -118,7 +120,7 @@ final class Commander {
             s = String(s[open...close])
         }
         guard let data = s.data(using: .utf8) else {
-            throw VozError.ollama("não foi possível ler o JSON")
+            throw VozError.ollama("could not read the JSON")
         }
         return try JSONDecoder().decode(Command.self, from: data)
     }
@@ -130,16 +132,16 @@ final class Commander {
         let mod = cmd.app.flatMap { AppRegistry.app(for: $0) }
         let contato = cmd.contato ?? ""
         let mensagem = cmd.mensagem ?? ""
-        var resposta = cmd.resposta ?? "Pronto."
+        var resposta = cmd.resposta ?? "Done."
 
         do {
             switch acao {
             case "abrir":
                 if let mod { try mod.open() }
             case "enviar_mensagem":
-                guard let mod else { return "Qual app você quer usar? Telegram, WhatsApp ou Mensagens?" }
-                guard !contato.isEmpty else { return "Pra quem você quer mandar a mensagem?" }
-                guard !mensagem.isEmpty else { return "O que você quer enviar?" }
+                guard let mod else { return "Which app do you want to use? Telegram, WhatsApp or Messages?" }
+                guard !contato.isEmpty else { return "Who do you want to message?" }
+                guard !mensagem.isEmpty else { return "What do you want to send?" }
                 try mod.send(contact: contato, message: mensagem)
             case "nova_conversa":
                 if let mod { try mod.newChat() }
@@ -147,7 +149,7 @@ final class Commander {
                 break   // resposta_verbal ou desconhecida → só fala a resposta
             }
         } catch {
-            resposta = "Tive um problema ao executar isso."
+            resposta = "I had a problem running that."
         }
         return resposta
     }

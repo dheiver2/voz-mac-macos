@@ -20,7 +20,7 @@ struct PanelView: View {
                 HStack {
                     Image(systemName: state.isRecording ? "stop.circle.fill" : "mic.circle.fill")
                         .font(.system(size: 20))
-                    Text(state.isRecording ? "Parar" : "Gravar")
+                    Text(state.isRecording ? "Stop" : "Record")
                         .fontWeight(.semibold)
                     Spacer()
                     Text("⌃⌥Space")
@@ -33,7 +33,7 @@ struct PanelView: View {
             .disabled(!state.authorized)
 
             if !state.transcript.isEmpty {
-                labeled("Você", state.transcript, .primary)
+                labeled("You", state.transcript, .primary)
             }
             if !state.lastResponse.isEmpty {
                 labeled("Voz Mac", state.lastResponse, .secondary)
@@ -43,9 +43,9 @@ struct PanelView: View {
 
             HStack(spacing: 12) {
                 statusDot("Ollama", ok: state.ollamaOnline)
-                statusDot("Permissões", ok: state.authorized)
+                statusDot("Permissions", ok: state.authorized)
                 Spacer()
-                Button("Sair") { NSApplication.shared.terminate(nil) }
+                Button("Quit") { NSApplication.shared.terminate(nil) }
                     .buttonStyle(.plain)
                     .foregroundStyle(.secondary)
             }

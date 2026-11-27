@@ -1,21 +1,22 @@
 import Foundation
 import AVFoundation
 
-/// Síntese de voz em PT-BR usando AVSpeechSynthesizer nativo — sem o comando `say`.
+/// Síntese de voz (inglês por padrão; pt-BR via AppLanguage) usando AVSpeechSynthesizer nativo — sem o comando `say`.
 final class Voice: NSObject {
     static let shared = Voice()
 
     private let synth = AVSpeechSynthesizer()
-    private let ptVoice: AVSpeechSynthesisVoice?
+    private let voice: AVSpeechSynthesisVoice?
 
     private override init() {
-        // Prefere uma voz aprimorada/premium PT-BR; cai para qualquer pt-BR disponível.
-        let ptBR = AVSpeechSynthesisVoice.speechVoices()
-            .filter { $0.language == "pt-BR" }
-        ptVoice = ptBR.first { $0.quality == .premium }
-            ?? ptBR.first { $0.quality == .enhanced }
-            ?? ptBR.first
-            ?? AVSpeechSynthesisVoice(language: "pt-BR")
+        // Prefere uma voz aprimorada/premium do idioma; cai para qualquer voz dele.
+        let id = AppLanguage.localeID
+        let candidates = AVSpeechSynthesisVoice.speechVoices()
+            .filter { $0.language == id }
+        voice = candidates.first { $0.quality == .premium }
+            ?? candidates.first { $0.quality == .enhanced }
+            ?? candidates.first
+            ?? AVSpeechSynthesisVoice(language: id)
         super.init()
     }
 
@@ -24,7 +25,7 @@ final class Voice: NSObject {
         guard !text.isEmpty else { return }
         stop()
         let u = AVSpeechUtterance(string: text)
-        u.voice = ptVoice
+        u.voice = voice
         u.rate = 0.5           // ~185 wpm equivalente
         u.postUtteranceDelay = 0.05
         synth.speak(u)
