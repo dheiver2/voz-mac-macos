@@ -6,6 +6,7 @@ cd "$(dirname "$0")"
 mkdir -p .build
 echo "🧪  Compilando testes…"
 swiftc -o .build/tests \
+    Sources/AppLanguage.swift \
     Sources/AppleScript.swift \
     Sources/Commander.swift \
     Sources/Voice.swift \

@@ -8,7 +8,7 @@ enum AppleScript {
     static func run(_ source: String) throws -> String {
         var errorInfo: NSDictionary?
         guard let script = NSAppleScript(source: source) else {
-            throw VozError.applescript("script inválido")
+            throw VozError.applescript("invalid script")
         }
         let result = script.executeAndReturnError(&errorInfo)
         if let errorInfo, let msg = errorInfo[NSAppleScript.errorMessage] as? String {

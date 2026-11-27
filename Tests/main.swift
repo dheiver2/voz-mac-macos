@@ -85,9 +85,9 @@ check("desconhecido vira nil", AppRegistry.app(for: "spotify") == nil)
 // MARK: - 4. Voz PT-BR disponível
 
 print("\n▶ Voz (AVSpeechSynthesizer)")
-let ptVoices = AVSpeechSynthesisVoice.speechVoices().filter { $0.language == "pt-BR" }
-print("  ℹ️  vozes pt-BR instaladas: \(ptVoices.map { $0.name }.joined(separator: ", "))")
-check("há ao menos uma voz pt-BR", !ptVoices.isEmpty)
+let langVoices = AVSpeechSynthesisVoice.speechVoices().filter { $0.language == AppLanguage.localeID }
+print("  ℹ️  vozes \(AppLanguage.localeID) instaladas: \(langVoices.map { $0.name }.joined(separator: ", "))")
+check("há ao menos uma voz \(AppLanguage.localeID)", !langVoices.isEmpty)
 
 // MARK: - 5. Integração Ollama (condicional)
 
@@ -103,7 +103,7 @@ if online {
     var got: Command?
     var errored = false
     var finished = false
-    commander.interpret("abre o telegram") { r in
+    commander.interpret("open telegram") { r in
         switch r {
         case .success(let c): got = c
         case .failure: errored = true
@@ -113,7 +113,7 @@ if online {
     waitUntil({ finished }, timeout: 40)
     if let c = got {
         print("  ℹ️  LLM retornou: acao=\(c.acao) app=\(c.app ?? "nil")")
-        check("Ollama interpreta 'abre o telegram' → abrir", c.acao == "abrir")
+        check("Ollama interpreta 'open telegram' → abrir", c.acao == "abrir")
         check("Ollama identifica app telegram", AppRegistry.app(for: c.app ?? "")?.id == "telegram")
     } else {
         check("Ollama respondeu sem erro", !errored)
@@ -122,7 +122,7 @@ if online {
     // Caso central: extração de contato + mensagem + app.
     var sendCmd: Command?
     var sendDone = false
-    commander.interpret("manda oi pra Maria no whatsapp") { r in
+    commander.interpret("send hi to Maria on whatsapp") { r in
         if case .success(let c) = r { sendCmd = c }
         sendDone = true
     }
@@ -140,7 +140,7 @@ if online {
     // Pergunta fora de escopo deve virar resposta_verbal (sem app).
     var verbalCmd: Command?
     var verbalDone = false
-    commander.interpret("que horas são?") { r in
+    commander.interpret("what time is it?") { r in
         if case .success(let c) = r { verbalCmd = c }
         verbalDone = true
     }

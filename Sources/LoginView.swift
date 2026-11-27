@@ -18,12 +18,12 @@ struct LoginView: View {
                 Text("Login").font(.caption).foregroundStyle(.secondary)
             }
 
-            TextField("Usuário", text: $username)
+            TextField("Username", text: $username)
                 .textFieldStyle(.roundedBorder)
                 .disableAutocorrection(true)
                 .onSubmit(attemptLogin)
 
-            SecureField("Senha", text: $password)
+            SecureField("Password", text: $password)
                 .textFieldStyle(.roundedBorder)
                 .onSubmit(attemptLogin)
 
@@ -34,7 +34,7 @@ struct LoginView: View {
             }
 
             Button(action: attemptLogin) {
-                Text("Entrar")
+                Text("Sign in")
                     .fontWeight(.semibold)
                     .frame(maxWidth: .infinity)
             }
@@ -47,7 +47,7 @@ struct LoginView: View {
 
     private func attemptLogin() {
         guard username == "admin", password == "admin" else {
-            errorMessage = "Usuário ou senha inválidos."
+            errorMessage = "Invalid username or password."
             password = ""
             return
         }

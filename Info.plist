@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+    <key>CFBundleDevelopmentRegion</key>
+    <string>en</string>
     <key>CFBundleName</key>
     <string>VozMac</string>
     <key>CFBundleDisplayName</key>
@@ -23,10 +25,10 @@
     <key>LSUIElement</key>
     <true/>
     <key>NSMicrophoneUsageDescription</key>
-    <string>O Voz Mac usa o microfone para você comandar por voz.</string>
+    <string>Voz Mac uses the microphone so you can give voice commands.</string>
     <key>NSSpeechRecognitionUsageDescription</key>
-    <string>O Voz Mac transcreve sua fala localmente para interpretar comandos.</string>
+    <string>Voz Mac transcribes your speech locally to interpret commands.</string>
     <key>NSAppleEventsUsageDescription</key>
-    <string>O Voz Mac controla Telegram, WhatsApp e Mensagens por você.</string>
+    <string>Voz Mac controls Telegram, WhatsApp and Messages for you.</string>
 </dict>
 </plist>

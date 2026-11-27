@@ -17,7 +17,7 @@ enum Telegram: MessagingApp {
 
     static func open() throws {
         try AppleScript.run(#"tell application "Telegram" to activate"#)
-        AppleScript.notify("Voz Mac", "Telegram aberto")
+        AppleScript.notify("Voz Mac", "Telegram opened")
     }
 
     static func send(contact: String, message: String) throws {
@@ -40,7 +40,7 @@ enum Telegram: MessagingApp {
             end tell
         end tell
         """)
-        AppleScript.notify("Telegram", "Mensagem enviada para \(contact)")
+        AppleScript.notify("Telegram", "Message sent to \(contact)")
     }
 
     static func newChat() throws {
@@ -62,7 +62,7 @@ enum WhatsApp: MessagingApp {
 
     static func open() throws {
         try AppleScript.run(#"tell application "WhatsApp" to activate"#)
-        AppleScript.notify("Voz Mac", "WhatsApp aberto")
+        AppleScript.notify("Voz Mac", "WhatsApp opened")
     }
 
     static func send(contact: String, message: String) throws {
@@ -85,7 +85,7 @@ enum WhatsApp: MessagingApp {
             end tell
         end tell
         """)
-        AppleScript.notify("WhatsApp", "Mensagem enviada para \(contact)")
+        AppleScript.notify("WhatsApp", "Message sent to \(contact)")
     }
 
     static func newChat() throws {
@@ -107,7 +107,7 @@ enum Messages: MessagingApp {
 
     static func open() throws {
         try AppleScript.run(#"tell application "Messages" to activate"#)
-        AppleScript.notify("Voz Mac", "Mensagens aberto")
+        AppleScript.notify("Voz Mac", "Messages opened")
     }
 
     static func send(contact: String, message: String) throws {
@@ -120,7 +120,7 @@ enum Messages: MessagingApp {
             send "\(m)" to toBuddy
         end tell
         """)
-        AppleScript.notify("Mensagens", "Mensagem enviada para \(contact)")
+        AppleScript.notify("Messages", "Message sent to \(contact)")
     }
 
     static func newChat() throws {

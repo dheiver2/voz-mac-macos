@@ -6,11 +6,11 @@ import AppKit
 @MainActor
 final class AppState: ObservableObject {
     enum Phase: String {
-        case idle = "Pronta"
-        case listening = "Ouvindo…"
-        case thinking = "Interpretando…"
-        case speaking = "Respondendo…"
-        case error = "Erro"
+        case idle = "Ready"
+        case listening = "Listening…"
+        case thinking = "Thinking…"
+        case speaking = "Speaking…"
+        case error = "Error"
     }
 
     @Published var phase: Phase = .idle
@@ -32,15 +32,15 @@ final class AppState: ObservableObject {
             self.authorized = ok
             if !ok {
                 self.phase = .error
-                self.lastResponse = "Preciso de permissão de microfone e reconhecimento de fala."
+                self.lastResponse = "I need microphone and speech recognition permission."
             }
         }
         commander.checkOllama { [weak self] online in
             self?.ollamaOnline = online
             if !online {
-                self?.lastResponse = "Ollama não está rodando. Inicie com: ollama serve"
+                self?.lastResponse = "Ollama is not running. Start it with: ollama serve"
             } else if self?.lastResponse.isEmpty ?? true {
-                Voice.shared.speak("Olá! Estou pronta. Clique em gravar e fale o comando.")
+                Voice.shared.speak(AppLanguage.code == "pt" ? "Olá! Estou pronta. Clique em gravar e fale o comando." : "Hi! I'm ready. Click record and say a command.")
             }
         }
     }
